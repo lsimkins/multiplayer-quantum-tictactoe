@@ -1,21 +1,20 @@
 var Board = Class.extend({
 	width: 500,
 	gutter: 20,
-	locations: {
-		0 : [0,0],
-		1 : [1,0],
-		2 : [2,0],
-		3 : [0,1],
-		4 : [1,1],
-		5 : [2,1],
-		6 : [0,2],
-		7 : [1,2],
-		8 : [2,2]
-	},
+	cells: [
+		[0,0],
+		[1,0],
+		[2,0],
+		[0,1],
+		[1,1],
+		[2,1],
+		[0,2],
+		[1,2],
+		[2,2]
+	],
 
-	init: function() {
-		this.canvas = document.getElementById('myCanvas');
-		this.ctx = this.canvas.getContext('2d');
+	init: function(context) {
+		this.ctx = context;
 
 		this.sectionWidth = this.width/3;
 		this.drawGameBoard(this.ctx);
@@ -49,8 +48,8 @@ var Board = Class.extend({
 
 	drawMove: function(player, loc) {
 		var ctx = this.ctx;
-		var drawLoc = this.locations[loc];
-		var drawX = drawLoc[0] * this.sectionWidth; 
+		var drawLoc = this.cells[loc];
+		var drawX = drawLoc[0] * this.sectionWidth;
 		var drawY = drawLoc[1] * this.sectionWidth;
 
 		// 10% padding between boarder and move.
@@ -80,5 +79,21 @@ var Board = Class.extend({
 			);
 			ctx.stroke();
 		}
+	},
+
+	getLocation: function(x, y) {
+		var locX = Math.floor(x / (this.sectionWidth + this.gutter));
+		var locY = Math.floor(y / (this.sectionWidth + this.gutter));
+
+		var coords = [locX, locY];
+
+		var targetCell = false;
+		for (var i=0; i<this.cells.length; i++) {
+			if (this.cells[i][0] === locX && this.cells[i][1] === locY) {
+				targetCell = i;
+			}
+		}
+
+		return targetCell;
 	}
 });

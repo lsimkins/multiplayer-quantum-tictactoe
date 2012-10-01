@@ -12,13 +12,39 @@ var Game = Class.extend({
 	moves : [],
 
 	init: function () {
+		var self = this;
+
 		// Initialize the game.
-		this.moves = [];
+		self.canvas = document.getElementById('myCanvas');
+		self.ctx = self.canvas.getContext('2d');
+		
+		self.moves = [];
 		for (i=0; i<9; i++) {
-			this.moves[i] = i;
+			self.moves[i] = i;
 		}
 
-		this.board = new Board();
+		self.player = "o";
+
+		self.canvas.addEventListener("click", function(e) {
+			self.onClick(e);
+		}, false);
+
+		self.board = new Board(self.ctx);
+	},
+
+	onClick: function(e) {
+		var mouseX, mouseY;
+
+		if(e.offsetX) {
+			mouseX = e.offsetX;
+			mouseY = e.offsetY;
+		}
+		else if(e.layerX) {
+			mouseX = e.layerX;
+			mouseY = e.layerY;
+		}
+
+		this.move(this.player, this.board.getLocation(mouseX, mouseY));
 	},
 
 	move: function(player, location) {
@@ -52,5 +78,3 @@ var Game = Class.extend({
 		console.log("We have a winner! " + winner);
 	}
 });
-
-var game = new Game();
