@@ -3,58 +3,41 @@ var Game = Class.extend({
 		[0,1,2],
 		[3,4,5],
 		[6,7,8],
-		[0,3,8],
+		[0,3,6],
 		[1,4,7],
 		[2,5,8],
-		[0,4,8]
+		[0,4,8],
+		[2,4,6]
 	],
-
-	moves : [],
 
 	init: function () {
 		var self = this;
 
 		// Initialize the game.
-		self.canvas = document.getElementById('myCanvas');
-		self.ctx = self.canvas.getContext('2d');
-		
 		self.moves = [];
 		for (i=0; i<9; i++) {
 			self.moves[i] = i;
 		}
 
-		self.player = "o";
-
-		self.canvas.addEventListener("click", function(e) {
-			self.onClick(e);
-		}, false);
-
-		self.board = new Board(self.ctx);
-	},
-
-	onClick: function(e) {
-		var mouseX, mouseY;
-
-		if(e.offsetX) {
-			mouseX = e.offsetX;
-			mouseY = e.offsetY;
-		}
-		else if(e.layerX) {
-			mouseX = e.layerX;
-			mouseY = e.layerY;
-		}
-
-		this.move(this.player, this.board.getLocation(mouseX, mouseY));
+		self.playerTurn = 'x';
 	},
 
 	move: function(player, location) {
+		if (this.playerTurn != player) {
+			console.log("Player " + player + "cannot move, not their turn.");
+			return false;
+		}
+
 		this.moves[location] = player;
-		this.board.drawMove(player, location);
+
+		this.playerTurn = (this.playerTurn == 'x') ? 'o' : 'x';
 
 		var winner = this.hasWinner();
 		if (winner) {
 			console.log("We have a winner");
 		}
+
+		return true;
 	},
 
 	hasWinner: function() {
@@ -78,3 +61,5 @@ var Game = Class.extend({
 		console.log("We have a winner! " + winner);
 	}
 });
+
+if (typeof(module) !== 'undefined' && typeof(module.exports) !== 'undefined') { module.exports = Game; }
