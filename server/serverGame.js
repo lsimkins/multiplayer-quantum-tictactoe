@@ -5,7 +5,10 @@ var ServerGame = Game.extend({
 		this._super();
 		this.group = group;
 		this.nowjs = nowjs;
-		this.players = {x: false, o: false};
+
+		if (this.players === undefined) {
+			this.players = {x: false, o: false};
+		}
 
 		this.isReady = false;
 		this.isStarted = false;
