@@ -1,12 +1,51 @@
 <!DOCTYPE HTML>
 <html>
   <head>
+    <link href='http://fonts.googleapis.com/css?family=Bevan|Orbitron:400,700|Prosto+One|Noticia+Text:400,700' rel='stylesheet' type='text/css'>
+    
     <style>
+      font-family: {
+        'Bevan', cursive;
+        'Orbitron', sans-serif;
+        'Prosto One', cursive;
+      }
+
+      h1 { font-family: 'Orbitron'; text-align: center; font-size: 2.4em;}
+      #game-board {margin: auto; width: 544px;}
+      .player-info { position: relative; text-align: center;}
+      .player-name { font-family: 'Orbitron';}
+      .player-piece { font-size: 3em; }
+      .your-info { float: left; left: 2%;}
+      .opponent-info { float: right; right: 2%;}
+      .stats .stat { display: block; text-align: left;}
       canvas {//position: relative; left: 120px; top: 20px;}
     </style>
+
   </head>
   <body>
-    <canvas id="myCanvas" width="800" height="800"></canvas>
+    <div class="your-info player-info">
+      <h2 class="player-name">Coldblooded</h2>
+      <span class="player-piece">X</span>
+      <div class="stats">
+        <span class="stat">Wins: 0</span>
+        <span class="stat">Losses: 0</span>
+      </div>
+    </div>
+
+    <div class="opponent-info player-info">
+      <h2 class="player-name">Opponent</h2>
+      <span class="player-piece">O</span>
+
+      <div class="stats">
+        <span class="stat">Wins: 0</span>
+        <span class="stat">Losses: 0</span>
+      </div>
+    </div>
+    <h1>Quantum Tic-Tac-Toe</h1>
+    <div id="game-board">
+      <canvas id="myCanvas" width="544" height="800"></canvas>
+    </div>
+
 
     <footer>
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
