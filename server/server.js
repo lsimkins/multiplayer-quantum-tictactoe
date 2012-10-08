@@ -21,7 +21,7 @@ nowjs.on("connect", function() {
 
 nowjs.on("disconnect", function(){
   console.log("Left: " + this.user.clientId);
-  //gm.playerDisconnect(this.user.clientId);
+  gm.playerDisconnected(this.user.clientId);
 });
 
 /*everyone.now.requestMove = function(player, move) {

@@ -6,7 +6,9 @@ var ServerGame = Game.extend({
 		this.group = group;
 		this.nowjs = nowjs;
 		this.players = {x: false, o: false};
-		this.ready = false;
+
+		this.isReady = false;
+		this.isStarted = false;
 	},
 
 	addPlayer: function(clientId) {
@@ -31,7 +33,7 @@ var ServerGame = Game.extend({
 			self.group.now.playerJoined(plr);
 
 			if (players.x !== false && players.y !== false) {
-				self.ready = true;
+				self.isReady = true;
 			}
 		});
 
@@ -40,8 +42,9 @@ var ServerGame = Game.extend({
 	start: function () {
 		var self = this;
 
-		if (this.ready) {
+		if (this.isReady) {
 			console.log('Game starting');
+			self.isStarted = true;
 			this.group.now.requestMove = function(playerId, player, location) {
 				self.movePlayer(playerId, player, location);
 			};
@@ -62,6 +65,26 @@ var ServerGame = Game.extend({
 		if (moveSuccessful) {
 			this.group.now.playerMoved(player, location);
 		}
+	},
+
+	playerLeft: function(playerId) {
+		var players = this.players;
+
+		if (players.x === playerId) {
+			players.x = false;
+		} else if (players.o === playerId) {
+			players.y = false;
+		} else {
+			console.log("Error: player " + playerId + " is not a part of this game.");
+			return false;
+		}
+
+		this.isReady = false;
+		this.isStarted = false;
+
+		this.group.now.playerLeft();
+
+		this.init(this.nowjs, this.group);
 	}
 });
 

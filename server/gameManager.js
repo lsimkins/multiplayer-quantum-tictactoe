@@ -6,7 +6,7 @@ var GameManager = Class.extend({
     this.nowjs = nowjs;
     this.players = [];
     this.gamesPending = [];
-    this.gamesStarted = {};
+    this.games = {};
   },
 
   playerConnected: function (clientId) {
@@ -14,12 +14,13 @@ var GameManager = Class.extend({
     if (this.gamesPending[0] !== undefined) {
       console.log('Adding player to existing game');
 
-      game = this.gamesPending.splice(0, 1);
-      game = game[0];
+      game = this.gamesPending[0];
 
       game.addPlayer(clientId);
-      game.start();
-      this.gamesStarted[game.gameId] = game;
+      if (game.isReady) {
+        game.start();
+        this.gamesPending.splice(0, 1);
+      }
     } else {
       console.log('Creating new game for player');
 
@@ -29,7 +30,21 @@ var GameManager = Class.extend({
       this.gamesPending.push(game);
     }
 
+    this.games[game.gameId] = game;
+
     this.players[clientId] = game.groupId;
+  },
+
+  playerDisconnected: function(clientId) {
+    var game = this.games[this.players[clientId]];
+
+    var gameStarted = game.isStarted;
+
+    game.playerLeft(clientId);
+
+    if (gameStarted) {
+      this.gamesPending.push(game);
+    }
   }
 });
 
