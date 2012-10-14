@@ -50,10 +50,11 @@ var ServerGame = Game.extend({
 			self.isStarted = true;
 			this.group.now.startGame();
 			this.group.now.requestMove = function(playerId, player, loc1, loc2) {
-				console.log(loc1); console.log(loc2);
 				var success = self.movePlayer(playerId, player, loc1, loc2);
 				if (!success) {
 					this.now.rejectRequest('move', '[error data]');
+				} else {
+					console.log(self.hasCyclicEntanglement());
 				}
 			};
 		} else {

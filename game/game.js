@@ -69,16 +69,21 @@ var Game = Class.extend({
 			moves1 = this.moves[loc1],
 			numLocMoves = moves1.length,
 			isEntangled = false;
-
+console.log('numLocMoves');console.log(numLocMoves);
 		if (numLocMoves > 1) {
-			for (var i; i<numLocMoves; i++) {
+			console.log('nummoves > 1');
+			for (var i = 0; i<numLocMoves; i++) {
+				console.log('looping');
 				mv = moves1[i];
 				
 				if (exclude && exclude.num == mv.num) {
+					console.log('excluding');
 					continue;
 				}
-
-				if (mv.loc1 === loc2 || mv.loc2 === loc2) {
+console.log('testing locations');
+console.log(mv.loc1);
+console.log(mv.loc2);
+				if (mv.loc1 == loc2 || mv.loc2 == loc2) {
 					isEntangled = true;
 					break;
 				}
