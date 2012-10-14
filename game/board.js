@@ -47,10 +47,15 @@ var Board = Class.extend({
 		ctx.stroke();
 	},
 
-	startMove: function(player, loc, num) {
+	drawSmallMove: function(player, loc, num) {
 		var ctx = this.ctx;
 		var drawLoc = this.cells[loc];
 		var innerLoc = this.cellMvCnt[loc]++;
+
+		if (innerLoc >= 9) {
+			console.log("Max moves on location. Stop trying to break the game!");
+			return;
+		}
 
 		var gutter = this.gutter / 3;
 		var padding = (this.sectionWidth/3) * 0.1;
@@ -58,14 +63,6 @@ var Board = Class.extend({
 
 		var drawX = drawLoc[0] * this.sectionWidth + (innerLoc%3 * (this.sectionWidth/3) * 0.95) + this.gutter + gutter;
 		var drawY = drawLoc[1] * this.sectionWidth + (Math.floor(innerLoc/3) * (this.sectionWidth/3 * 0.95)) + this.gutter + gutter;
-
-		console.log(drawLoc);
-		console.log(innerLoc);
-		console.log(gutter);
-		console.log(padding);
-		console.log(drawWidth);
-		console.log(drawX);
-		console.log(drawY);
 
 		ctx.beginPath();
 		ctx.strokeStyle = '#ff0000';
@@ -95,7 +92,7 @@ var Board = Class.extend({
 		// TODO: draw number next to move
 	},
 
-	drawMove: function(player, loc) {
+	drawLargeMove: function(player, loc) {
 		ctx.beginPath();
 		ctx.strokeStyle = '#ff0000';
 		ctx.lineCap = 'round';

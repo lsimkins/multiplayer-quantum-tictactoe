@@ -55,7 +55,7 @@ var Game = Class.extend({
 	},
 
 	hasCyclicEntanglement: function() {
-		var lastMove = this.superMoves(this.superMoves.length - 1);
+		var lastMove = this.superMoves[this.superMoves.length - 1];
 
 		return this.locationsEntangled(lastMove.loc1, lastMove.loc2, lastMove);
 	},

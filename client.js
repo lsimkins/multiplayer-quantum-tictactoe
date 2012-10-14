@@ -1,6 +1,6 @@
 var GameClient = Game.extend({
 	MOVE_NONE : 0,
-	MOVE_NOTSTARTED : 1,
+	MOVE_READY : 1,
 	MOVE_STARTED : 2,
 
 	init: function(now) {
@@ -12,6 +12,9 @@ var GameClient = Game.extend({
 		self.now.playerMoved = self.playerMoved;
 		self.now.playerJoined = self.playerJoined;
 		self.now.setPlayer = self.setPlayer;
+		self.now.startGame = function() {
+			self.startGame();
+		};
 
 		self.moveState = this.MOVE_NONE;
 
@@ -20,7 +23,7 @@ var GameClient = Game.extend({
 		};
 	},
 
-	setupCanvas: function() {
+	setupCanvas: function(initial) {
 		var self = this;
 
 		self.canvas = document.getElementById('myCanvas');
@@ -29,16 +32,18 @@ var GameClient = Game.extend({
 		
 		self.board  = new Board(self.ctx);
 
-		self.canvas.addEventListener("click", function(e) {
-			self.onClick(e);
-		}, false);
+		if (initial) {
+			self.canvas.addEventListener("click", function(e) {
+				self.onClick(e);
+			}, false);
+		}
 
 		return this;
 	},
 
 	startGame: function() {
+		console.log("Game starting!");
 		if (this.player === 'x') {
-			console.log("Game starting!");
 			this.moveState = 1;
 		}
 	},
@@ -62,28 +67,38 @@ var GameClient = Game.extend({
 
 		var loc = self.board.getLocation(mouseX, mouseY);
 
-		if (self.moveState == self.MOVE_NOTSTARTED) {
-			self.moveState = self.MOVE_STARTED;
-			self.move1 = loc;
-			self.board.startMove(self.player, loc);
+		if (this.moves[loc].length !== undefined && this.moves[loc].length < 9) {
+			if (self.moveState == self.MOVE_READY) {
+				console.log('Making move 1');
+				self.moveState = self.MOVE_STARTED;
+				self.move1 = loc;
+				self.board.drawSmallMove(self.player, loc);
+			} else if (self.move1 !== loc) {
+				console.log('Making move 2');
+				now.requestMove(now.core.clientId, self.player, self.move1, loc);
+				self.moveState = self.MOVE_NONE;
+			}
 		} else {
-			now.requestMove(now.core.clientId, self.player, self.move1, loc);
+			console.log('Cannot move there! Moves at that location are maxed out!');
 		}
 	},
 
-	move: function(player, location) {
-		this._super(player, location);
+	move: function(player, loc1, loc2) {
+		this._super(player, loc1, loc2);
 
 		this.moves[location] = player;
-		this.board.drawMove(player, location);
+		this.board.drawSmallMove(player, loc2);
 
-		now.move = location;
+		if (player != this.player) {
+			this.board.drawSmallMove(player, loc1);
+			this.moveState = this.MOVE_READY;
+		}
 	},
 
 	reset: function() {
 		console.log("player disconnected, resetting game");
 
-		this.setupCanvas();
+		this.setupCanvas(false);
 		this.init(now);
 	},
 
@@ -95,8 +110,8 @@ var GameClient = Game.extend({
 		client.clientId = clientId;
 	},
 
-	playerMoved: function(player, move) {
-		client.move(player, move);
+	playerMoved: function(player, loc1, loc2) {
+		client.move(player, loc1, loc2);
 	},
 
 	playerJoined: function(player) {
@@ -112,10 +127,14 @@ var GameClient = Game.extend({
 	setPlayer: function(player) {
 		console.log("You are player " + player);
 		client.player = player;
+	},
+
+	rejectRequest: function(type, data) {
+		console.log('Server rejected request with data: ' + data);
 	}
 });
 
 $(document).ready(function() {
 	client = new GameClient(now)
-		.setupCanvas();
+		.setupCanvas(true);
 });
