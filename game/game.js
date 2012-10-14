@@ -15,29 +15,88 @@ var Game = Class.extend({
 
 		// Initialize the game.
 		self.moves = [];
+		self.superMoves = [];
 		for (i=0; i<9; i++) {
-			self.moves[i] = i;
+			self.moves[i] = [];
 		}
 
 		self.playerTurn = 'x';
 	},
 
-	move: function(player, location) {
+	move: function(player, loc1, loc2) {
 		if (this.playerTurn != player) {
-			console.log("Player " + player + "cannot move, not their turn.");
+			console.log("Player " + player + " cannot move, not their turn.");
 			return false;
 		}
 
-		this.moves[location] = player;
+		var move = {
+			plr  : player,
+			loc1 : loc1,
+			loc2 : loc2
+		};
+
+		var moveNum = this.superMoves.push(move);
+
+		move.num = moveNum;
+
+		this.moves[loc1].push(move);
+		this.moves[loc2].push(move);
 
 		this.playerTurn = (this.playerTurn == 'x') ? 'o' : 'x';
 
+		var collapse = this.hasCyclicEntanglement();
+		
 		var winner = this.hasWinner();
 		if (winner) {
 			console.log("We have a winner");
 		}
 
 		return true;
+	},
+
+	hasCyclicEntanglement: function() {
+		var lastMove = this.superMoves(this.superMoves.length - 1);
+
+		return this.locationsEntangled(lastMove.loc1, lastMove.loc2, lastMove);
+	},
+
+	locationsEntangled: function(loc1, loc2, exclude) {
+		if (exclude === undefined) {
+			exclude = false;
+		}
+
+		var nextLoc, mv,
+			moves1 = this.moves[loc1],
+			numLocMoves = moves1.length,
+			isEntangled = false;
+
+		if (numLocMoves > 1) {
+			for (var i; i<numLocMoves; i++) {
+				mv = moves1[i];
+				
+				if (exclude && exclude.num == mv.num) {
+					continue;
+				}
+
+				if (mv.loc1 === loc2 || mv.loc2 === loc2) {
+					isEntangled = true;
+					break;
+				}
+
+				nextLoc = (mv.loc1 == loc1) ? mv.loc2 : mv.loc1;
+
+				isEntangled = this.locationsEntangled(nextLoc, loc2);
+			}
+		}
+
+		return isEntangled;
+	},
+
+	isLocCyclic: function(loc) {
+		var move, locMoves = this.moves[loc];
+		for (i = 0; i < locMoves.length; i++) {
+			move = moves[i];
+		}
 	},
 
 	hasWinner: function() {

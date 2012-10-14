@@ -1,4 +1,7 @@
 var GameClient = Game.extend({
+	MOVE_NONE : 0,
+	MOVE_NOTSTARTED : 1,
+	MOVE_STARTED : 2,
 
 	init: function(now) {
 		var self = this;
@@ -9,7 +12,9 @@ var GameClient = Game.extend({
 		self.now.playerMoved = self.playerMoved;
 		self.now.playerJoined = self.playerJoined;
 		self.now.setPlayer = self.setPlayer;
-		
+
+		self.moveState = this.MOVE_NONE;
+
 		self.now.playerLeft = function() {
 			self.reset();
 		};
@@ -31,8 +36,20 @@ var GameClient = Game.extend({
 		return this;
 	},
 
+	startGame: function() {
+		if (this.player === 'x') {
+			console.log("Game starting!");
+			this.moveState = 1;
+		}
+	},
+
 	onClick: function(e) {
-		var mouseX, mouseY;
+		var mouseX, mouseY, self = this;
+
+		if (self.moveState == self.MOVE_NONE) {
+			console.log("It's not your turn!");
+			return;
+		}
 
 		if(e.offsetX) {
 			mouseX = e.offsetX;
@@ -43,7 +60,15 @@ var GameClient = Game.extend({
 			mouseY = e.layerY;
 		}
 
-		now.requestMove(now.core.clientId, this.player, this.board.getLocation(mouseX, mouseY));
+		var loc = self.board.getLocation(mouseX, mouseY);
+
+		if (self.moveState == self.MOVE_NOTSTARTED) {
+			self.moveState = self.MOVE_STARTED;
+			self.move1 = loc;
+			self.board.startMove(self.player, loc);
+		} else {
+			now.requestMove(now.core.clientId, self.player, self.move1, loc);
+		}
 	},
 
 	move: function(player, location) {
